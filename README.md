@@ -69,25 +69,42 @@ See: [docs/diagram.md](docs/diagram.md)
 
 ## Versioning
 
-
+See: [docs/versions.md](docs/versions.md)
 
 ## 💡 What's next? Ideas
 
-For future work, would be nice to have a py/js parser + lovely test coverage.
+For future work, would be nice to have a py/js parser + a lovely test coverage.
 
 As for the syntax, ideas for EBNF (not planned as for now though :):
 
 * Relative Dates, `1980-01-01 + 5y 3m 2d`, `2023-10-01..+P6M`
-* Time-based language parsed, `today`, `last week`
-* Time-line based, `past`, `future`, `now`
-* Recurring / Cyclical Dates, `R:Yearly-12-25`, `R:Weekly-Wed`
-* Time Intervals (Duration + Start/End), `P3y6m2d`, `2023-01-01/P1y`
+    * Relative Dates for business days, `2023-01-01 + 5bd`
+    * Relative Dates for holidays, `2023-01-01 + 5hd`
+    * Relative Dates for weekends, `2023-01-01 + 5wd`
+    * Relative Dates for fiscal periods, `2023-01-01 + 5fp`
+    * Relative Dates for academic periods, `2023-01-01 + 5ap`
+* Seasonal References, `Next-Summer`, `Last-Winter`
+* Timeline based
+    * Time-based language parsed, `today`, `lastWeek`
+    * Time-line based, `past`, `future`, `now`
+    * Relative to now, `justNow`, `momentAgo`, `nearFuture`, `farFuture`
+    * Past references, `recentPast`, `distantPast`
+* Time spans, `lifetime`, `generation`
+* Recurring / Cyclical Dates, `R:Yearly-12-25`, `R:Weekly-Wed`, `R:Weekly-Mon-Fri-except(2023-01-01)-for(1y)`
+* Time Intervals (Duration + Start/End), `P3y6m2d`, `2023-01-01/P1y`, `P3lunarMonths`
 * Fuzzy Relative Time References, `~Soon`, `~LongAgo`, `~Recently`
 * Event-Based References, `@WW2:End + 1y`, `@MoonLanding`, `@PersonX:Birth`
 * Era-Based References, `JurassicPeriod`, `IronAge`, `MiddleAges`, `VictorianEra`, `WWII`, `InformationAge`
 * Fuzzy Anchors, `JurassicPeriod..MiddleAges`, `WWII..`
+* Cultural Variations, `2023-01-01(en-US)`, `2023-01-01(pl-PL)`
+* Culture/Religious-events based, `Easter(2023)`, `Christmas(2023)`, `ChineseNewYear(2023)`
 * Contextual Modifiers, `BusinessDays(2023-12-20..2023-12-31)`, `Weekends(2023-05)`, `Holidays(US, 2023)`
-* Mathematical Operations on Dates, `Avg(2023-01-01, 2023-12-31)`, `2023-01-01 + (2023-12-31 - 2023-01-01)/2`
+* Mathematical Operations on Dates, `Avg(2023-01-01, 2023-12-31)`, `2023-01-01 + (2023-12-31 - 2023-01-01)/2`, `Union(2023-01-01,2023-12-31)`
 * Linguistic Approximations, `~A few years ago`, `~Last century`
 * Versioning for Date Definitions, `@MoonLanding{v2}`
-* Bidirectional Indefiniteness ("between-ish"), `2022~between~2025`
+* Bidirectional Indefiniteness ("between-ish"), `2022~between~2025`, `2022*70%~2025`
+* Temporal categories:
+    * Temporal Logic, `Before(date1, date2)`, `During(date, period)`
+    * Temporal Aggregation, `GroupBy(dates, period)`, `Cluster(dates, maxGap)`
+    * Temporal Validation, `IsValid(date, constraints)`, `IsConsistent(dates)`
+    * Temporal Transformation, `Convert(date, targetCalendar)`, `Normalize(date, format)`
