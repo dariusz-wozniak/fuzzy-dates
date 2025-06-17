@@ -4,7 +4,7 @@ fuzzy_date_expression  = temporal_expression_unit , { "|" , temporal_expression_
 (* Top-level rule: Allows a single temporal expression or multiple expressions combined with '|' for choices *)
 
 temporal_expression_unit = date_expr
-                         | time_only_expr        (* New: Time-only expression *)
+                         | time_only_expr
                          | century_expr
                          | decade_expr
                          | numeric_timeline_point
@@ -14,7 +14,7 @@ temporal_expression_unit = date_expr
                          | half_year_expr
                          | ordinal_day_expr
                          | range_expr
-                         | partial_date_expr ;   (* New: Expressions for month-only or day-only *)
+                         | partial_date_expr ;
 
 range_expr             = ( temporal_expression_boundary ) , ".." ,
                          ( temporal_expression_boundary ) ;
@@ -29,68 +29,68 @@ temporal_expression_boundary = date_expr
                              | half_year_expr
                              | ordinal_day_expr
                              | empty_date_boundary
-                             | "?" ;             (* New: Uncertain range boundary *)
+                             | "?" ;
 
 empty_date_boundary    = "" ; (* Represents an implied start or end to a range (e.g., "..2020") *)
 
 temporal_qualifier     = "Early" | "Mid" | "Late" ; (* For semantic fuzziness like "Early-2020" *)
 
 uncertainty            = "(" , uncertainty_content , ")" ;
-uncertainty_content    = uncertainty_symmetric | uncertainty_asymmetric | distribution_details ; (* New: Includes distribution details *)
+uncertainty_content    = uncertainty_symmetric | uncertainty_asymmetric | distribution_details ;
 
-uncertainty_symmetric  = "±" , number , [uncertainty_unit] ; (* New: Optional unit for symmetric uncertainty *)
-uncertainty_asymmetric = "+" , number , [uncertainty_unit] , "-" , number , [uncertainty_unit] ; (* New: Optional units for asymmetric uncertainty *)
+uncertainty_symmetric  = "±" , number , [uncertainty_unit] ;
+uncertainty_asymmetric = "+" , number , [uncertainty_unit] , "-" , number , [uncertainty_unit] ;
 uncertainty_unit       = ("y" | "Q" | "m" | "d" | "h" | "min" | "s" ) ; (* Common units for uncertainty: year, quarter, month, day, hour, minute, second *)
 
-distribution_details   = distribution_name , "(" , distribution_param_list , ")" ; (* New: Rules for probability distributions *)
+distribution_details   = distribution_name , "(" , distribution_param_list , ")" ;
 distribution_name      = "normal" | "uniform" | "triangular" ;
 distribution_param_list = distribution_param , { "," , distribution_param } ;
 distribution_param     = label , "=" , ( number | date_expr ) ; (* Parameters can be numbers or dates *)
 label                  = (letter | digit | "_") , { letter | digit | "_" } ; (* Label for distribution parameters *)
 
-date_expr              = [ "~" ] , [ temporal_qualifier , "-" ] , date_prefix , { uncertainty } , (* Allows multiple uncertainty components for nesting *)
-                         [ time_component ] , [ timezone_component ] , [ geo_qualifier ] , (* New: Geo-qualifier *)
+date_expr              = [ "~" ] , [ temporal_qualifier , "-" ] , date_prefix , { uncertainty } ,
+                         [ time_component ] , [ timezone_component ] , [ geo_qualifier ] ,
                          [ note_component ] , [ style_note ] , [ calendar_system ] ;
 (* Date expression with optional approximation, dashed temporal qualifier, multiple uncertainties, time, timezone, geo-qualifier, note, style, and calendar system *)
 
-partial_date_expr      = "?" , "-" , month_component , [ time_component ] , [ geo_qualifier ] , [ note_component ] , [ style_note ] , [ calendar_system ] (* Month only, unknown year, optional time *)
-                       | "?" , "-" , "?" , "-" , day_component , [ time_component ] , [ geo_qualifier ] , [ note_component ] , [ style_note ] , [ calendar_system ] ; (* Day only, unknown year/month, optional time *)
+partial_date_expr      = "?" , "-" , month_component , [ time_component ] , [ geo_qualifier ] , [ note_component ] , [ style_note ] , [ calendar_system ]
+                       | "?" , "-" , "?" , "-" , day_component , [ time_component ] , [ geo_qualifier ] , [ note_component ] , [ style_note ] , [ calendar_system ] ;
 
-date_prefix            = ( year , [ "-" , month_component ] , [ "-" , day_component ] ) (*YYYY-MM-DD or -Y(YYY)-MM-DD pattern *)
-                       | ( season_name , "-" , year ) ; (* Season-YYYY or Season--Y(YYY) pattern *)
+date_prefix            = ( year , [ "-" , month_component ] , [ "-" , day_component ] )
+                       | ( season_name , "-" , year ) ;
 
 season_name            = "Spring" | "Summer" | "Autumn" | "Winter" ; (* Defines season names *)
 
-century_expr           = [ "~" ] , [ temporal_qualifier , "-" ] , century_number , "C" , { uncertainty } , (* Allows multiple uncertainty components *)
+century_expr           = [ "~" ] , [ temporal_qualifier , "-" ] , century_number , "C" , { uncertainty } ,
                          [ style_note ] , [ calendar_system ] ;
 (* Century expression with optional approximation, dashed temporal qualifier, uncertainty, style, and calendar system *)
 
-century_number         = integer_number | temporal_integer_choice ; (* Century number can be a single integer or a choice/range *)
+century_number         = integer_number | temporal_integer_choice ;
 
-decade_expr            = [ "~" ] , [ temporal_qualifier , "-" ] , decade_number , "s" , { uncertainty } , (* Allows multiple uncertainty components *)
+decade_expr            = [ "~" ] , [ temporal_qualifier , "-" ] , decade_number , "s" , { uncertainty } ,
                          [ style_note ] , [ calendar_system ] ;
-(* New: Decade expression with optional approximation, dashed temporal qualifier, uncertainty, style, and calendar system *)
+(* Decade expression with optional approximation, dashed temporal qualifier, uncertainty, style, and calendar system *)
 
 decade_number          = digit , digit , digit ; (* Represents the first three digits of a decade, e.g., '197' for 1970s *)
 
-day_of_year_expr       = [ "~" ] , "D" , day_number_in_year , "-" , year , { uncertainty } , (* Allows multiple uncertainty components *)
+day_of_year_expr       = [ "~" ] , "D" , day_number_in_year , "-" , year , { uncertainty } ,
                          [ note_component ] , [ style_note ] , [ calendar_system ] ;
-(* New: Specific day number within a year, e.g., D123-2022 *)
+(* Specific day number within a year, e.g., D123-2022 *)
 day_number_in_year     = digit , [ digit ] , [ digit ] ; (* Allows 1-3 digits. Semantic validation for max day number is external. *)
 
-week_expr              = [ "~" ] , [ temporal_qualifier , "-" ] , "W" , digit , digit , "-" , year , [ "-" , "D-" , day_of_week_number_periodic ] , { uncertainty } , (* Allows multiple uncertainty components *)
+week_expr              = [ "~" ] , [ temporal_qualifier , "-" ] , "W" , digit , digit , "-" , year , [ "-" , "D-" , day_of_week_number_periodic ] , { uncertainty } ,
                          [ note_component ] , [ style_note ] , [ calendar_system ] ;
 (* Week number expression, e.g., W12-2022, ~Early-W01-2023, W12-2022-D-1 *)
 
-quarter_expr           = [ "~" ] , [ temporal_qualifier , "-" ] , "Q" , ("1" | "2" | "3" | "4") , "-" , year , { uncertainty } , (* Allows multiple uncertainty components *)
+quarter_expr           = [ "~" ] , [ temporal_qualifier , "-" ] , "Q" , ("1" | "2" | "3" | "4") , "-" , year , { uncertainty } ,
                          [ note_component ] , [ style_note ] , [ calendar_system ] ;
 (* Quarter number expression, e.g., Q2-2022, ~Late-Q4-2024 *)
 
-half_year_expr         = [ "~" ] , [ temporal_qualifier , "-" ] , "H" , ("1" | "2") , "-" , year , { uncertainty } , (* Allows multiple uncertainty components *)
+half_year_expr         = [ "~" ] , [ temporal_qualifier , "-" ] , "H" , ("1" | "2") , "-" , year , { uncertainty } ,
                          [ note_component ] , [ style_note ] , [ calendar_system ] ;
 (* Half-year expression, e.g., H1-2022, ~H2-2023 *)
 
-ordinal_day_expr       = [ "~" ] , ( ordinal_day_single | ordinal_day_range ) , { uncertainty } , (* Allows multiple uncertainty components *)
+ordinal_day_expr       = [ "~" ] , ( ordinal_day_single | ordinal_day_range ) , { uncertainty } ,
                          [ note_component ] , [ style_note ] , [ calendar_system ] ;
 (* Ordinal day-of-week expression, e.g., 1º-Mon-2022, [1º..3º]-Mon-H2-2023 *)
 
@@ -102,27 +102,27 @@ day_of_week_short      = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun" ;
 day_of_week_number_periodic = "1" | "2" | "3" | "4" | "5" | "6" | "7" ; (* Day number within a periodic structure, 1=Monday *)
 
 ordinal_temporal_period_reference = year
-                                  | date_prefix (* For specific date ranges within which ordinal day falls *)
+                                  | date_prefix
                                   | decade_expr
                                   | century_expr
                                   | week_expr
                                   | quarter_expr
-                                  | half_year_expr ; (* Extended to include all periodic expressions *)
+                                  | half_year_expr ;
 
-numeric_timeline_point = [ "~" ] , number , { uncertainty } , [ note_component ] ; (* Allows multiple uncertainty components *)
+numeric_timeline_point = [ "~" ] , number , { uncertainty } , [ note_component ] ;
 (* For cosmic or abstract time points *)
 
-time_only_expr         = "T" , time_component , [ timezone_component ] , [ geo_qualifier ] , [ note_component ] , [ style_note ] , [ calendar_system ] ; (* Time only with optional components *)
+time_only_expr         = "T" , time_component , [ timezone_component ] , [ geo_qualifier ] , [ note_component ] , [ style_note ] , [ calendar_system ] ;
 
-geo_qualifier          = "@" , (location_name | geo_coordinates) ; (* Geo-temporal qualifier *)
+geo_qualifier          = "@" , (location_name | geo_coordinates) ;
 location_name          = { character_in_location_name } ;
 character_in_location_name = letter | digit | " " | "/" | "-" | "_" ;
 geo_coordinates        = "geo:" , number , "," , number ;
 
-weighted_date_part       = (year | month_number_literal | day_number_literal | century_number_literal | hour_literal | minute_literal | second_literal) , "*" , percentage ; (* Expanded: Allows various date/time literals with percentage weight *)
-weighted_date_part_choice = "[" , weighted_date_part , { "-" , weighted_date_part } , "]" ; (* Rule for weighted choices of date parts *)
+weighted_date_part       = (year | month_number_literal | day_number_literal | century_number_literal | hour_literal | minute_literal | second_literal) , "*" , percentage ;
+weighted_date_part_choice = "[" , weighted_date_part , { "-" , weighted_date_part } , "]" ;
 
-temporal_integer_choice = "[" , ( integer_range | integer_discrete ) , "]" ; (* New: General choice/range for integer temporal parts *)
+temporal_integer_choice = "[" , ( integer_range | integer_discrete ) , "]" ;
 integer_range          = integer_number , ".." , integer_number ;
 integer_discrete       = integer_number , { "|" , integer_number } ;
 
@@ -132,7 +132,7 @@ month_component        = month_number_literal | "?" | weighted_date_part_choice 
 day_number_literal     = "0" , ("1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9") | ("1" | "2") , digit | "3" , ("0" | "1") ; (* Stricter: 01-31 *)
 day_component          = day_number_literal | "?" | day_choice_component | weighted_date_part_choice | temporal_integer_choice ;
 
-time_component         = hour_component , ":" , minute_component , [ ":" , second_component , [ fractional_seconds ] ] ; (* Updated to use component rules *)
+time_component         = hour_component , ":" , minute_component , [ ":" , second_component , [ fractional_seconds ] ] ;
 
 hour_literal           = ("0" | "1") , digit | "2" , ("0" | "1" | "2" | "3") ; (* Stricter: 00-23 *)
 hour_component         = hour_literal | "?" | weighted_date_part_choice | temporal_integer_choice ;
@@ -145,21 +145,21 @@ second_component       = second_literal | "?" | weighted_date_part_choice | temp
 
 fractional_seconds     = "." , digit , { digit } ;
 
-timezone_component     = ("Z" | ("+" | "-") , tz_hour , ":" , tz_minute | (letter , letter , letter)) (* Existing simple forms *)
-                       | "[" , (timezone_full_id | timezone_transition) , "]" ; (* Explicit timezone IDs and transitions *)
+timezone_component     = ("Z" | ("+" | "-") , tz_hour , ":" , tz_minute | (letter , letter , letter))
+                       | "[" , (timezone_full_id | timezone_transition) , "]" ;
 
-timezone_full_id       = { character_in_timezone_id } ; (* e.g., America/New_York *)
-character_in_timezone_id = letter | digit | "_" | "/" | "+" | "-" ; (* Characters allowed in timezone ID, including for UTC offsets like UTC+2 *)
+timezone_full_id       = { character_in_timezone_id } ;
+character_in_timezone_id = letter | digit | "_" | "/" | "+" | "-" ;
 
-timezone_transition    = (timezone_full_id) , "→" , (timezone_full_id) ; (* e.g., EST→EDT or UTC+2→UTC+3 *)
+timezone_transition    = (timezone_full_id) , "→" , (timezone_full_id) ;
 
 note_component         = "#" , { character } ;
 
 style_note             = "(os)" | "(ns)" ; (* Simplified: Old Style (O.S., st. v.) / New Style (N.S., st. n.) dating note *)
 
-calendar_system        = "(" , calendar_id , ")" ; (* Explicit calendar system definition *)
-calendar_id            = { character_in_calendar_id } ; (* Now allows custom text for calendar IDs *)
-character_in_calendar_id = ? any printable character except ')' and newline ? ; (* Characters allowed within calendar ID *)
+calendar_system        = "(" , calendar_id , ")" ;
+calendar_id            = { character_in_calendar_id } ;
+character_in_calendar_id = ? any printable character except ')' and newline ? ;
 
 multi_date_choice      = "[" , date_choice , { "|" , date_choice } , "]" ;
 
@@ -172,19 +172,19 @@ day_range              = day_number_literal , ".." , [ "~" ] , day_number_or_wil
 
 day_number_or_wildcard = day_number_literal | "?" ;
 
-year                   = integer_number | "?" | temporal_integer_choice ; (* Year can be an integer, wildcard, or a range/choice *)
-century_number_literal = digit , { digit } ; (* The literal form for century number *)
+year                   = integer_number | "?" | temporal_integer_choice ;
+century_number_literal = digit , { digit } ;
 
-integer_number         = [ "-" ] , digit , { digit } ; (* Rule for integer numbers, without fractional part or underscores *)
+integer_number         = [ "-" ] , digit , { digit } ;
 
-percentage             = "100%" | digit , digit , "%" ; (* 100% and 00-99% *)
+percentage             = "100%" | digit , digit , "%" ;
 
-number                 = [ "-" ] , digit , { digit_or_underscore } , [ "." , digit , { digit } ] ; (* Allows optional '-' *)
+number                 = [ "-" ] , digit , { digit_or_underscore } , [ "." , digit , { digit } ] ;
 
 digit_or_underscore    = digit | "_" ;
 
 digit                  = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
-letter                 = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" ; (* Capital letters for ISO codes *)
+letter                 = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" ;
 character              = ? any printable character except newline ? ;
 
 

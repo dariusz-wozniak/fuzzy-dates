@@ -383,9 +383,18 @@ Expressing statistical distributions over temporal periods.
 * `Date~triangular(early=date,peak=date,late=date)`: Triangular distribution
 
 Examples:
+
 * `2023~normal(μ=2023,σ=2)`: Normally distributed around 2023
+
+![Normal Distribution](../docs/normal_distribution.png)
+
 * `~2024-06-15~uniform(start=2024-06-01,end=2024-06-30)`: Uniform distribution
+
+![Uniform Distribution](../docs/uniform_distribution.png)
+
 * `19C~triangular(early=1801,peak=1850,late=1900)`: Triangular distribution
+
+![Triangular Distribution](../docs/triangular_distribution.png)
 
 ### Temporal Integer Choices
 

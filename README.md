@@ -27,6 +27,41 @@ Use the [grammar/fuzzy-date.ebnf](grammar/fuzzy-date.ebnf) file to implement a p
 3. **Testing**: Use the examples provided to test your implementation
 4. **Integration**: Integrate the parser into your application for handling fuzzy date inputs
 
+## 📚 EBNF file
+
+https://github.com/dariusz-wozniak/fuzzy-dates/blob/d97e14b5a2c2f3089973de9ae93de12ca43ffde8/grammar/fuzzy-date.ebnf#L1-L188
+
+## ✨ Features Overview
+
+* Standard Dates — e.g. `1990-05-01`
+* Approximate Dates (`~`) — e.g. `~1990`
+* Partial Dates (`?`) — e.g. `2025-04-?`
+* Time-Only Expressions (`T`) — e.g. `T12:00:00`
+* Time-Only Expressions With High Precision — e.g. `2023-11-20T23:59:59.123456789`
+* Seasons (`Season-YYYY`) — e.g. `Autumn-2023`
+* Periodic Dates (`D`, `W`, `Q`, `H`) — e.g. `D12-2022`
+* Centuries (`C`) - e.g. `19C`
+* Decades (`YYYYs`) - e.g. `1970s`
+* Temporal Qualifiers (`Early-`, `Mid-`, `Late-`) — e.g. `Early-2020`
+* Notes and Annotations — e.g. `1985-12-17T08:45:00+02:00#birth of author`
+* Geo-Temporal Qualifiers — e.g. `2023-06-15@Tokyo`
+* Geo-Temporal Qualifiers With Coordinates — e.g. `2023-06-15T12:00:00@geo:50.061389,19.937222`
+* Historical Style Notes — e.g. `1700-03-20(os)`
+* Calendar Systems — e.g. `1700-03-20(julian)`
+* Ranges and Open-ended Ranges — e.g. `2000..2010`
+* Multiple Choices — e.g. `1980-01-01..1981-12-31|1990-01..1992-06`
+* Day & Month Choices/Ranges — e.g. `2012-12-[1..3]`
+* Uncertainty Expressions — e.g. `2014(±2y)`
+* Nested Uncertainty — e.g. `~2023(±1y)(±0.5Q)`
+* Ordinal Day-of-Week Expressions — e.g. `1º-Mon-2022`
+* Weighted Date Part Choices — e.g. `2020-[03*20%-04*80%]`
+* Probability Distributions — e.g. `2023~normal(μ=2023,σ=2)`
+* Temporal Integer Choices — e.g. `2023-[03..05]`
+* Timezone Handling — e.g. `2024-01-01T00:00:00[America/New_York]`
+* Timezone Shifts — e.g. `2024-01-01T00:00:00[EST→EDT]`
+* Number Separators — e.g. `1_000_000`
+
+
 ## 🔄 SPARQL Integration
 
 The Fuzzy Dates grammar can be integrated with SPARQL queries to handle temporal data with uncertainty. Here's how you can use it:
@@ -98,51 +133,11 @@ WHERE {
    - Document your fuzzy date patterns
    - Include uncertainty information when available
 
-## 📚 EBNF file
+## 📃 Docs
 
-https://github.com/dariusz-wozniak/fuzzy-dates/blob/d97e14b5a2c2f3089973de9ae93de12ca43ffde8/grammar/fuzzy-date.ebnf#L1-L188
-
-## ✨ Features Overview
-
-* Standard Dates — e.g. `1990-05-01`
-* Approximate Dates (`~`) — e.g. `~1990`
-* Partial Dates (`?`) — e.g. `2025-04-?`
-* Time-Only Expressions (`T`) — e.g. `T12:00:00`
-* Time-Only Expressions With High Precision — e.g. `2023-11-20T23:59:59.123456789`
-* Seasons (`Season-YYYY`) — e.g. `Autumn-2023`
-* Periodic Dates (`D`, `W`, `Q`, `H`) — e.g. `D12-2022`
-* Centuries (`C`) - e.g. `19C`
-* Decades (`YYYYs`) - e.g. `1970s`
-* Temporal Qualifiers (`Early-`, `Mid-`, `Late-`) — e.g. `Early-2020`
-* Notes and Annotations — e.g. `1985-12-17T08:45:00+02:00#birth of author`
-* Geo-Temporal Qualifiers — e.g. `2023-06-15@Tokyo`
-* Geo-Temporal Qualifiers With Coordinates — e.g. `2023-06-15T12:00:00@geo:50.061389,19.937222`
-* Historical Style Notes — e.g. `1700-03-20(os)`
-* Calendar Systems — e.g. `1700-03-20(julian)`
-* Ranges and Open-ended Ranges — e.g. `2000..2010`
-* Multiple Choices — e.g. `1980-01-01..1981-12-31|1990-01..1992-06`
-* Day & Month Choices/Ranges — e.g. `2012-12-[1..3]`
-* Uncertainty Expressions — e.g. `2014(±2y)`
-* Nested Uncertainty — e.g. `~2023(±1y)(±0.5Q)`
-* Ordinal Day-of-Week Expressions — e.g. `1º-Mon-2022`
-* Weighted Date Part Choices — e.g. `2020-[03*20%-04*80%]`
-* Probability Distributions — e.g. `2023~normal(μ=2023,σ=2)`
-* Temporal Integer Choices — e.g. `2023-[03..05]`
-* Timezone Handling — e.g. `2024-01-01T00:00:00[America/New_York]`
-* Timezone Shifts — e.g. `2024-01-01T00:00:00[EST→EDT]`
-* Number Separators — e.g. `1_000_000`
-
-## 🔍 Detailed Features
-
-See: [docs/features.md](docs/features.md)
-
-## 🔡 Diagram
-
-See: [docs/diagram.md](docs/diagram.md)
-
-## Versioning
-
-See: [docs/versions.md](docs/versions.md)
+* [Features](docs/features.md)
+* [Diagram](docs/diagram.md)
+* [Versions](docs/versions.md)
 
 ## 💡 What's next? Ideas
 
