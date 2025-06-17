@@ -59,6 +59,24 @@ EBNF (Extended Backus-Naur Form) is a notation for formally describing syntax. I
 
 Basic date expressions in various formats.
 
+**Syntax:**
+* `YYYY`: Four-digit year
+* `YYYY-MM`: Year and month
+* `YYYY-MM-DD`: Full date
+* `-YYYY`: Year BC
+* `YYYY-MM-DDThh:mm:ss`: Date with time
+* `YYYY-MM-DDThh:mm:ss±hh:mm`: Date with timezone offset
+* `YYYY-MM-DDThh:mm:ssZ`: UTC time
+* `YYYY-MM-DDThh:mm:ss[ZoneID]`: Date with IANA timezone ID
+* `YYYY-MM-DDThh:mm:ss[Zone]`: Date with timezone abbreviation
+* `YYYY-MM-DDThh:mm:ss.sss`: Date with fractional seconds
+* `YYYY-MM-DDThh:mm:ss.sssssssss`: Date with nanosecond precision
+
+Where:
+* `ZoneID` is an IANA timezone identifier (e.g., `America/New_York`)
+* `Zone` is a timezone abbreviation (e.g., `PST`, `IST`, `JST`)
+* `sss` represents any number of decimal places for fractional seconds
+
 Examples:
 * `1990`: A specific year
 * `2023-05`: A specific year and month
@@ -77,6 +95,13 @@ Examples:
 
 The tilde (`~`) prefix indicates that a date is approximate or estimated.
 
+**Syntax:**
+* `~YYYY`: Approximate year
+* `~YYYY-MM`: Approximate month
+* `~YYYY-MM-DD`: Approximate day
+* `~Season-YYYY`: Approximate season
+* `~TemporalQualifier-Period`: Approximate period with qualifier
+
 Examples:
 * `~1990`: Approximate year 1990
 * `~Autumn-2023`: Approximate year 2023, Autumn season
@@ -88,6 +113,13 @@ Examples:
 ### Partial Dates (`?`)
 
 Used when only part of a date is known or relevant.
+
+**Syntax:**
+* `?-MM`: Known month, unknown year
+* `?-?-DD`: Known day, unknown month and year
+* `YYYY-MM-?`: Known year and month, unknown day
+* `YYYY-?-DD`: Known year and day, unknown month
+* `?-MM-DD`: Known month and day, unknown year
 
 Examples:
 * `?-05`: May, unknown year
@@ -103,6 +135,14 @@ Examples:
 
 Expressions that specify only time, without a date.
 
+**Syntax:**
+* `Thh:mm:ss`: Full time
+* `Thh:mm`: Hours and minutes
+* `T?:mm:ss`: Unknown hour
+* `Thh:?:ss`: Unknown minutes
+* `Thh:mm:?`: Unknown seconds
+* `T?:?:?`: Completely unknown time
+
 Examples:
 * `T12:00:00`: Any day at noon
 * `T?:30:00`: Any hour, at 30 minutes, 00 seconds
@@ -115,6 +155,16 @@ Examples:
 
 Expressions that include fractional seconds for high precision timing.
 
+**Syntax:**
+* `Thh:mm:ss.sss`: Time with fractional seconds
+* `Thh:mm:ss.sssssssss`: Time with nanosecond precision
+* `YYYY-MM-DDThh:mm:ss.sss`: Date and time with fractional seconds
+* `YYYY-MM-DDThh:mm:ss.sssssssss`: Date and time with nanosecond precision
+
+Where:
+* `sss` represents any number of decimal places for fractional seconds
+* Precision is not limited to milliseconds or nanoseconds, but can be any number of decimal places
+
 Examples:
 * `2023-11-20T23:59:59.123`: Date and time with milliseconds
 * `2023-11-20T23:59:59.123456789`: Date and time with nanoseconds
@@ -122,6 +172,13 @@ Examples:
 ### Seasons (`Season-YYYY`)
 
 Representation of seasonal periods.
+
+**Syntax:**
+* `Season-YYYY`: Specific season in a year
+* `~Season-YYYY`: Approximate season
+* `TemporalQualifier-Season-YYYY`: Qualified season
+
+Where `Season` is one of: `Spring`, `Summer`, `Autumn`, `Winter`
 
 Examples:
 * `Autumn-2023`: A specific season and year
@@ -131,6 +188,13 @@ Examples:
 ### Periodic Dates (`D`, `W`, `Q`, `H`)
 
 Special expressions for recurring temporal periods (day of year, week, quarter, half-year).
+
+**Syntax:**
+* `Dddd-YYYY`: Day of year (1-366)
+* `Www-YYYY`: Week of year (1-53)
+* `Qq-YYYY`: Quarter of year (1-4)
+* `Hh-YYYY`: Half of year (1-2)
+* `Www-YYYY-D-d`: Week and day of week (1-7)
 
 Examples:
 * `D12-2022`: The 12th day of year 2022
@@ -143,6 +207,14 @@ Examples:
 
 Representation of century periods.
 
+**Syntax:**
+* `nC`: nth century AD
+* `-nC`: nth century BC
+* `TemporalQualifier-nC`: Qualified century
+* `~nC`: Approximate century
+
+Where `n` is a positive integer
+
 Examples:
 * `19C`: Specific 19th Century
 * `-5C`: 5th Century BC
@@ -152,6 +224,13 @@ Examples:
 ### Decades (`YYYYs`)
 
 Representation of decade periods.
+
+**Syntax:**
+* `YYYYs`: Decade starting with YYYY
+* `TemporalQualifier-YYYYs`: Qualified decade
+* `~YYYYs`: Approximate decade
+
+Where `YYYY` is a year ending in 0
 
 Examples:
 * `1970s`: The decade of the 1970s
@@ -163,6 +242,13 @@ Examples:
 
 Semantic qualifiers for temporal periods.
 
+**Syntax:**
+* `Early-Period`: Early part of a period
+* `Mid-Period`: Middle part of a period
+* `Late-Period`: Late part of a period
+
+Where `Period` can be a year, decade, century, season, or other temporal unit
+
 Examples:
 * `Early-2020`: Early part of 2020
 * `Mid-19C`: Middle of the 19th Century
@@ -171,6 +257,13 @@ Examples:
 ### Notes and Annotations
 
 Adding descriptive information to dates.
+
+**Syntax:**
+* `Date#Note`: Date with a note
+* `Date(Uncertainty)#Note`: Date with uncertainty and note
+* `Date@Location#Note`: Date with location and note
+
+Where `Note` is any text describing the date's significance
 
 Examples:
 * `1985-12-17T08:45:00+02:00#birth of author`: Specific date and time with timezone and a descriptive note
@@ -183,6 +276,12 @@ Examples:
 
 Adding geographical context to temporal expressions.
 
+**Syntax:**
+* `Date@Location`: Date with location name
+* `Date@geo:lat,lon`: Date with coordinates
+* `Time@Location`: Time with location
+* `Time@geo:lat,lon`: Time with coordinates
+
 Examples:
 * `2023-06-15@Tokyo`: Date specific to Tokyo timezone
 * `1985-12-17T08:45:00@geo:50.061389,19.937222`: Date and time at specific coordinates
@@ -192,8 +291,9 @@ Examples:
 
 Representing different calendar systems and historical dating styles.
 
-* `(os)` – Old Style (Julian calendar)
-* `(ns)` – New Style (Gregorian calendar)
+**Syntax:**
+* `Date(os)`: Old Style (Julian calendar)
+* `Date(ns)`: New Style (Gregorian calendar)
 
 Examples:
 * `1700-03-20(os)`: March 20, 1700, Old Style (Julian calendar)
@@ -202,6 +302,13 @@ Examples:
 ### Calendar Systems
 
 Explicit specification of calendar systems; use `(calendar)` instead of `(os)` or `(ns)`.
+
+**Syntax:**
+* `Date(calendar)`: Date in specific calendar system
+* `Date(iso8601)`: ISO 8601 calendar
+* `Date(julian)`: Julian calendar
+* `Date(gregorian)`: Gregorian calendar
+* `Date(custom)`: Custom calendar system
 
 Examples:
 * `2023-01-01(iso8601)`: January 1, 2023, ISO 8601 calendar
@@ -212,6 +319,14 @@ Examples:
 ### Ranges and Open-ended Ranges
 
 Expressing periods between two points in time.
+
+**Syntax:**
+* `Start..End`: Range from Start to End
+* `Start..`: Open-ended range from Start
+* `..End`: Open-ended range until End
+* `?..End`: Uncertain start, known end
+* `Start..?`: Known start, uncertain end
+* `?..`: Completely uncertain range
 
 Examples:
 * `2000..2010`: A year range from 2000 to 2010
@@ -228,6 +343,11 @@ Examples:
 
 Expressing alternative temporal possibilities.
 
+**Syntax:**
+* `Option1|Option2`: Either Option1 or Option2
+* `Range1|Range2`: Either Range1 or Range2
+* `Date1|Date2|Date3`: One of multiple dates
+
 Examples:
 * `1980-01-01..1981-12-31|1990-01..1992-06`: Multiple date ranges, either 1980-1981 or 1990-1992
 * `19C|20C`: Either the 19th Century OR the 20th Century
@@ -237,6 +357,11 @@ Examples:
 
 Flexible expressions for specific days or months.
 
+**Syntax:**
+* `YYYY-MM-[D1..D2]`: Range of days in a month
+* `YYYY-[M1-D1|M2-D2]`: Specific dates in a year
+* `YYYY-MM-[D1|D2|D3]`: Multiple days in a month
+
 Examples:
 * `2012-12-[1..3]`: Year 2012, December, between day 1 and day 3 (inclusive)
 * `1948-[04-11|05-12|06-01]`: Year 1948, on one of three specific dates
@@ -245,6 +370,13 @@ Examples:
 ### Uncertainty Expressions
 
 Representing uncertainty in temporal expressions.
+
+**Syntax:**
+* `Date(±Nunit)`: Symmetric uncertainty
+* `Date(+Nunit-Munit)`: Asymmetric uncertainty
+* `~Date(±Nunit)`: Approximate date with uncertainty
+
+Where `unit` can be: `y` (year), `Q` (quarter), `m` (month), `d` (day), `h` (hour), `min` (minute), `s` (second)
 
 Examples:
 * `2014(±2y)`: Year 2014, with a symmetric uncertainty of ±2 years
@@ -256,6 +388,10 @@ Examples:
 
 Expressing multiple layers of uncertainty.
 
+**Syntax:**
+* `Date(Uncertainty1)(Uncertainty2)`: Multiple uncertainty levels
+* `~Date(Uncertainty1)(Uncertainty2)`: Approximate date with multiple uncertainties
+
 Examples:
 * `~2023(±1y)(±0.5Q)`: Nested uncertainty intervals
 * `~Early-2020s(±2y)(±1Q)`: Uncertainty in both year and quarter
@@ -265,6 +401,13 @@ Examples:
 
 Expressing specific occurrences of days of the week.
 
+**Syntax:**
+* `nº-Day-Period`: nth occurrence of a day in a period
+* `[nº..mº]-Day-Period`: Range of occurrences
+* `nº-Day-Season-YYYY`: Specific occurrence in a season
+
+Where `Day` is: `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun`
+
 Examples:
 * `1º-Mon-2022`: The first Monday of year 2022
 * `4º-Fri-Autumn-2023`: The fourth Friday of Autumn 2023
@@ -273,6 +416,13 @@ Examples:
 ### Weighted Date Part Choices
 
 Expressing probability distributions over date parts.
+
+**Syntax:**
+* `[Part1*P1%-Part2*P2%]`: Weighted choice between parts
+* `[Year*P1%-Year*P2%]`: Weighted year choice
+* `[Month*P1%-Month*P2%]`: Weighted month choice
+
+Where `P1`, `P2` are percentages that sum to 100%
 
 Examples:
 * `2020-[03*20%-04*80%]`: Year 2020, with weighted probability
@@ -284,6 +434,11 @@ Examples:
 
 Expressing statistical distributions over temporal periods.
 
+**Syntax:**
+* `Date~normal(μ=value,σ=value)`: Normal distribution
+* `Date~uniform(start=date,end=date)`: Uniform distribution
+* `Date~triangular(early=date,peak=date,late=date)`: Triangular distribution
+
 Examples:
 * `2023~normal(μ=2023,σ=2)`: Normally distributed around 2023
 * `~2024-06-15~uniform(start=2024-06-01,end=2024-06-30)`: Uniform distribution
@@ -292,6 +447,12 @@ Examples:
 ### Temporal Integer Choices
 
 Expressing ranges or choices of temporal integers.
+
+**Syntax:**
+* `[N..M]`: Range of integers
+* `[N|M|P]`: Choice of integers
+* `YYYY-[MM..MM]`: Range of months
+* `YYYY-MM-[DD..DD]`: Range of days
 
 Examples:
 * `[2020..2025]`: A range of years from 2020 to 2025
@@ -305,6 +466,17 @@ Examples:
 
 Expressing timezone information.
 
+**Syntax:**
+* `DateTTime[Zone]`: Date and time in specific timezone
+* `DateTTimeZ`: UTC time
+* `DateTTime±hh:mm`: Timezone offset
+* `DateTTime[ZoneID]`: IANA timezone ID
+* `DateTTime[Zone]`: Timezone abbreviation
+
+Where:
+* `ZoneID` is an IANA timezone identifier (e.g., `America/New_York`)
+* `Zone` is a timezone abbreviation (e.g., `PST`, `IST`, `JST`, `UTC`)
+
 Examples:
 * `2024-01-01T00:00:00[America/New_York]`: Explicit timezone ID
 * `2024-01-01T00:00:00Z`: January 1, 2024, at midnight UTC
@@ -316,6 +488,10 @@ Examples:
 
 Expressing timezone transitions and changes.
 
+**Syntax:**
+* `DateTTime[Zone1→Zone2]`: Timezone transition
+* `DateTTime[Offset1→Offset2]`: Offset change
+
 Examples:
 * `2024-01-01T00:00:00[EST→EDT]`: Timezone with daylight saving shift
 * `2024-01-01T00:00:00[UTC+2→UTC+3]`: Timezone offset change
@@ -323,6 +499,11 @@ Examples:
 ### Number Separators
 
 Using underscores for readability in large numbers.
+
+**Syntax:**
+* `n_nnn_nnn`: Number with underscore separators
+* `-n_nnn_nnn`: Negative number with separators
+* `~n_nnn_nnn`: Approximate number with separators
 
 Examples:
 * `1_000_000`: Year 1M
