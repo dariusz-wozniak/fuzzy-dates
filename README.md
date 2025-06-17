@@ -1,3 +1,5 @@
+![Fuzzy Dates](docs/fuzzy-dates.png)
+
 # 🕒 Fuzzy Dates
 
 A comprehensive EBNF (Extended Backus-Naur Form) grammar for representing fuzzy, uncertain, and complex temporal expressions. This grammar provides a standardized way to express dates and times with various levels of precision, uncertainty, and contextual information.
