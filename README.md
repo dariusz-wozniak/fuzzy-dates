@@ -157,6 +157,7 @@ As for the syntax, ideas for EBNF (not planned as for now though :):
     * Relative to now, `justNow`, `momentAgo`, `nearFuture`, `farFuture`
     * Past references, `recentPast`, `distantPast`
 * Time spans, `lifetime`, `generation`
+* Support millenia, `1mil`
 * Recurring / Cyclical Dates, `R:Yearly-12-25`, `R:Weekly-Wed`, `R:Weekly-Mon-Fri-except(2023-01-01)-for(1y)`
 * Time Intervals (Duration + Start/End), `P3y6m2d`, `2023-01-01/P1y`, `P3[LunarMonth]`
 * Fuzzy Relative Time References, `~Soon`, `~LongAgo`, `~Recently`
@@ -176,3 +177,4 @@ As for the syntax, ideas for EBNF (not planned as for now though :):
     * Temporal Aggregation, `GroupBy(dates, period)`, `Cluster(dates, maxGap)`
     * Temporal Validation, `IsValid(date, constraints)`, `IsConsistent(dates)`
     * Temporal Transformation, `Convert(date, targetCalendar)`, `Normalize(date, format)`
+* Connect with External Data (e.g. Wikidata)
