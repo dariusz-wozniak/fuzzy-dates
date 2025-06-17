@@ -167,7 +167,8 @@ As for the syntax, ideas for EBNF (not planned as for now though :):
 * Culture/Religious-events based, `Easter(2023)`, `Christmas(2023)`, `ChineseNewYear(2023)`
 * Contextual Modifiers, `BusinessDays(2023-12-20..2023-12-31)`, `Weekends(2023-05)`, `Holidays(US, 2023)`
 * Mathematical Operations on Dates, `Avg(2023-01-01, 2023-12-31)`, `2023-01-01 + (2023-12-31 - 2023-01-01)/2`, `Union(2023-01-01,2023-12-31)`
-* Linguistic Approximations, `~A few years ago`, `~Last century`
+* Linguistic Approximations, `~FewYearsAgo`, `~LastCentury`
+* Date Element Comments and Citations, `1237-03-[19|20|21|22|23#('Most 13th-century sources suggest that John died between 19 and 23 March 1237')]`, `~1170#('uncertain birth year')`
 * Versioning for Date Definitions, `@MoonLanding{v2}`
 * Bidirectional Indefiniteness ("between-ish"), `2022~between~2025`, `2022*70%~2025`
 * Temporal categories:
