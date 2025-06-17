@@ -510,3 +510,24 @@ Examples:
 * `-1_234_567_890`: Year -1234567890
 * `~-13_787_000_000(±20_000_000)#Big Bang`: Approximate point with uncertainty
 * `~-4_500_000_000#EarthFormation`: Earth's formation with readable number
+
+# What's next? Ideas
+
+For future work (not planned though), there could be a parser and tests.
+
+As for the syntax, ideas for EBNF (not planned):
+
+* Relative Dates, `1980-01-01 + 5y 3m 2d`, `2023-10-01..+P6M`
+* Time-based language parsed, `today`, `last week`
+* Time-line based, `past`, `future`, `now`
+* Recurring / Cyclical Dates, `R:Yearly-12-25`, `R:Weekly-Wed`
+* Time Intervals (Duration + Start/End), `P3y6m2d`, `2023-01-01/P1y`
+* Fuzzy Relative Time References, `~Soon`, `~LongAgo`, `~Recently`
+* Event-Based References, `@WW2:End + 1y`, `@MoonLanding`, `@PersonX:Birth`
+* Era-Based References, `JurassicPeriod`, `IronAge`, `MiddleAges`, `VictorianEra`, `WWII`, `InformationAge`
+* Fuzzy Anchors, `JurassicPeriod..MiddleAges`, `WWII..`
+* Contextual Modifiers, `BusinessDays(2023-12-20..2023-12-31)`, `Weekends(2023-05)`, `Holidays(US, 2023)`
+* Mathematical Operations on Dates, `Avg(2023-01-01, 2023-12-31)`, `2023-01-01 + (2023-12-31 - 2023-01-01)/2`
+* Linguistic Approximations, `~A few years ago`, `~Last century`
+* Versioning for Date Definitions, `2023-01-01{v1}`, `@MoonLanding{v2}`
+* Bidirectional Indefiniteness ("between-ish"), `2022~between~2025`
