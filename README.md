@@ -29,7 +29,7 @@ Use the [grammar/fuzzy-date.ebnf](grammar/fuzzy-date.ebnf) file to implement a p
 
 ## 📚 EBNF file
 
-https://raw.githubusercontent.com/dariusz-wozniak/fuzzy-dates/refs/heads/main/grammar/fuzzy-date.ebnf#L1-L188
+https://github.com/dariusz-wozniak/fuzzy-dates/blob/dda6ec2945b3ff63f153c9259ce47acb0253d3eb/grammar/fuzzy-date.ebnf#L1-L188
 
 ## ✨ Features Overview
 
