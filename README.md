@@ -27,6 +27,77 @@ Use the [grammar/fuzzy-date.ebnf](grammar/fuzzy-date.ebnf) file to implement a p
 3. **Testing**: Use the examples provided to test your implementation
 4. **Integration**: Integrate the parser into your application for handling fuzzy date inputs
 
+## 🔄 SPARQL Integration
+
+The Fuzzy Dates grammar can be integrated with SPARQL queries to handle temporal data with uncertainty. Here's how you can use it:
+
+### Basic Integration
+
+```sparql
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX fuzzy: <http://example.org/fuzzy-dates#>
+
+# Example query using fuzzy date expressions
+SELECT ?event ?date
+WHERE {
+  ?event fuzzy:date ?date .
+  FILTER(fuzzy:matches(?date, "~2020(±2y)"))
+}
+```
+
+### Key Features for SPARQL
+
+1. **Custom Functions**
+   - `fuzzy:matches(date, pattern)` - Matches a date against a fuzzy date pattern
+   - `fuzzy:overlaps(date1, date2)` - Checks if two fuzzy dates overlap
+   - `fuzzy:contains(date, subdate)` - Checks if one fuzzy date contains another
+
+2. **Temporal Reasoning**
+   ```sparql
+   # Find events that occurred during a specific period
+   SELECT ?event
+   WHERE {
+     ?event fuzzy:date ?date .
+     FILTER(fuzzy:overlaps(?date, "2020-2025"))
+   }
+   ```
+
+3. **Uncertainty Handling**
+   ```sparql
+   # Find events with specific uncertainty levels
+   SELECT ?event
+   WHERE {
+     ?event fuzzy:date ?date .
+     FILTER(fuzzy:matches(?date, "2020(±1y)"))
+   }
+   ```
+
+4. **Complex Temporal Queries**
+   ```sparql
+   # Find events in a specific season with uncertainty
+   SELECT ?event
+   WHERE {
+     ?event fuzzy:date ?date .
+     FILTER(fuzzy:matches(?date, "Summer-2023(±1m)"))
+   }
+   ```
+
+### Implementation Notes
+
+1. **Parser Integration**
+   - Implement the EBNF grammar parser as a SPARQL extension
+   - Register custom functions with your SPARQL engine
+
+2. **Performance Considerations**
+   - Index fuzzy date expressions for efficient querying
+   - Use appropriate data types for storage
+   - Consider caching frequently used patterns
+
+3. **Best Practices**
+   - Use consistent date formats across your dataset
+   - Document your fuzzy date patterns
+   - Include uncertainty information when available
+
 ## 📚 EBNF file
 
 https://github.com/dariusz-wozniak/fuzzy-dates/blob/d97e14b5a2c2f3089973de9ae93de12ca43ffde8/grammar/fuzzy-date.ebnf#L1-L188
@@ -93,7 +164,7 @@ As for the syntax, ideas for EBNF (not planned as for now though :):
     * Past references, `recentPast`, `distantPast`
 * Time spans, `lifetime`, `generation`
 * Recurring / Cyclical Dates, `R:Yearly-12-25`, `R:Weekly-Wed`, `R:Weekly-Mon-Fri-except(2023-01-01)-for(1y)`
-* Time Intervals (Duration + Start/End), `P3y6m2d`, `2023-01-01/P1y`, `P3lunarMonths`
+* Time Intervals (Duration + Start/End), `P3y6m2d`, `2023-01-01/P1y`, `P3[LunarMonth]`
 * Fuzzy Relative Time References, `~Soon`, `~LongAgo`, `~Recently`
 * Event-Based References, `@WW2:End + 1y`, `@MoonLanding`, `@PersonX:Birth`
 * Era-Based References, `JurassicPeriod`, `IronAge`, `MiddleAges`, `VictorianEra`, `WWII`, `InformationAge`
