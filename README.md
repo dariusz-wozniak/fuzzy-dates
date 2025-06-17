@@ -1,8 +1,8 @@
-# Fuzzy Dates
+# 🕒 Fuzzy Dates
 
 A comprehensive EBNF (Extended Backus-Naur Form) grammar for representing fuzzy, uncertain, and complex temporal expressions. This grammar provides a standardized way to express dates and times with various levels of precision, uncertainty, and contextual information.
 
-## Introduction
+## 📝 Introduction
 
 The Fuzzy Dates grammar is designed to solve the problem of representing temporal information that is not exact or precise. It's particularly useful in scenarios where:
 
@@ -25,11 +25,11 @@ Use the [grammar/fuzzy-date.ebnf](grammar/fuzzy-date.ebnf) file to implement a p
 3. **Testing**: Use the examples provided to test your implementation
 4. **Integration**: Integrate the parser into your application for handling fuzzy date inputs
 
-## EBNF file
+## 📚 EBNF file
 
 https://github.com/dariusz-wozniak/fuzzy-dates/blob/d97e14b5a2c2f3089973de9ae93de12ca43ffde8/grammar/fuzzy-date.ebnf#L1-L188
 
-## Features Overview
+## ✨ Features Overview
 
 * Standard Dates — e.g. `1990-05-01`
 * Approximate Dates (`~`) — e.g. `~1990`
@@ -59,7 +59,7 @@ https://github.com/dariusz-wozniak/fuzzy-dates/blob/d97e14b5a2c2f3089973de9ae93d
 * Timezone Shifts — e.g. `2024-01-01T00:00:00[EST→EDT]`
 * Number Separators — e.g. `1_000_000`
 
-## Detailed Features
+## 🔍 Detailed Features
 
 ### Standard Dates
 
@@ -517,11 +517,11 @@ Examples:
 * `~-13_787_000_000(±20_000_000)#Big Bang`: Approximate point with uncertainty
 * `~-4_500_000_000#EarthFormation`: Earth's formation with readable number
 
-# What's next? Ideas
+## 💡 What's next? Ideas
 
-For future work (not planned though), there could be a parser and tests.
+For future work, would be nice to have a py/js parser + lovely test coverage.
 
-As for the syntax, ideas for EBNF (not planned):
+As for the syntax, ideas for EBNF (not planned as for now though :):
 
 * Relative Dates, `1980-01-01 + 5y 3m 2d`, `2023-10-01..+P6M`
 * Time-based language parsed, `today`, `last week`
