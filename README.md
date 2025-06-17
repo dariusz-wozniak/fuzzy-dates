@@ -135,7 +135,7 @@ WHERE {
 ## 📃 Docs
 
 * [Features](docs/features.md)
-* [Diagram](docs/diagram.md)
+* [Syntax Diagram](docs/diagram.md)
 * [Versions](docs/versions.md)
 
 ## 💡 What's next? Ideas
