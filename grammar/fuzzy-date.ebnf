@@ -1,0 +1,371 @@
+(* Fuzzy Date Syntax in EBNF — Extended Version with Time, Timezone, Notes, Multiple Ranges, Parenthesized Uncertainty, Century Support, Open-ended Ranges, Dashed Temporal Qualifiers, Decades ('s' qualifier), Historical Style Notes (os/ns), Explicit Calendar System Definitions, Week/Quarter/Half-Year Numbers, Ordinal Day-of-Week Expressions, Named Timezones, Partial Dates, Time-Only Expressions, Probability Distributions, Nested Uncertainty, and Geo-Temporal Qualifiers *)
+
+fuzzy_date_expression  = temporal_expression_unit , { "|" , temporal_expression_unit } ;
+(* Top-level rule: Allows a single temporal expression or multiple expressions combined with '|' for choices *)
+
+temporal_expression_unit = date_expr
+                         | time_only_expr        (* New: Time-only expression *)
+                         | century_expr
+                         | decade_expr
+                         | numeric_timeline_point
+                         | day_of_year_expr
+                         | week_expr
+                         | quarter_expr
+                         | half_year_expr
+                         | ordinal_day_expr
+                         | range_expr
+                         | partial_date_expr ;   (* New: Expressions for month-only or day-only *)
+
+range_expr             = ( temporal_expression_boundary ) , ".." ,
+                         ( temporal_expression_boundary ) ;
+(* General range definition. Boundaries can be any date, century, decade, week, quarter, half-year, ordinal day, or an implied/fuzzy boundary. *)
+
+temporal_expression_boundary = date_expr
+                             | century_expr
+                             | decade_expr
+                             | day_of_year_expr
+                             | week_expr
+                             | quarter_expr
+                             | half_year_expr
+                             | ordinal_day_expr
+                             | empty_date_boundary
+                             | "?" ;             (* New: Uncertain range boundary *)
+
+empty_date_boundary    = "" ; (* Represents an implied start or end to a range (e.g., "..2020") *)
+
+temporal_qualifier     = "Early" | "Mid" | "Late" ; (* For semantic fuzziness like "Early-2020" *)
+
+uncertainty            = "(" , uncertainty_content , ")" ;
+uncertainty_content    = uncertainty_symmetric | uncertainty_asymmetric | distribution_details ; (* New: Includes distribution details *)
+
+uncertainty_symmetric  = "±" , number , [uncertainty_unit] ; (* New: Optional unit for symmetric uncertainty *)
+uncertainty_asymmetric = "+" , number , [uncertainty_unit] , "-" , number , [uncertainty_unit] ; (* New: Optional units for asymmetric uncertainty *)
+uncertainty_unit       = ("y" | "Q" | "m" | "d" | "h" | "min" | "s" ) ; (* Common units for uncertainty: year, quarter, month, day, hour, minute, second *)
+
+distribution_details   = distribution_name , "(" , distribution_param_list , ")" ; (* New: Rules for probability distributions *)
+distribution_name      = "normal" | "uniform" | "triangular" ;
+distribution_param_list = distribution_param , { "," , distribution_param } ;
+distribution_param     = label , "=" , ( number | date_expr ) ; (* Parameters can be numbers or dates *)
+label                  = (letter | digit | "_") , { letter | digit | "_" } ; (* Label for distribution parameters *)
+
+date_expr              = [ "~" ] , [ temporal_qualifier , "-" ] , date_prefix , { uncertainty } , (* Allows multiple uncertainty components for nesting *)
+                         [ time_component ] , [ timezone_component ] , [ geo_qualifier ] , (* New: Geo-qualifier *)
+                         [ note_component ] , [ style_note ] , [ calendar_system ] ;
+(* Date expression with optional approximation, dashed temporal qualifier, multiple uncertainties, time, timezone, geo-qualifier, note, style, and calendar system *)
+
+partial_date_expr      = "?" , "-" , month_component , [ time_component ] , [ geo_qualifier ] , [ note_component ] , [ style_note ] , [ calendar_system ] (* Month only, unknown year, optional time *)
+                       | "?" , "-" , "?" , "-" , day_component , [ time_component ] , [ geo_qualifier ] , [ note_component ] , [ style_note ] , [ calendar_system ] ; (* Day only, unknown year/month, optional time *)
+
+date_prefix            = ( year , [ "-" , month_component ] , [ "-" , day_component ] ) (*YYYY-MM-DD or -Y(YYY)-MM-DD pattern *)
+                       | ( season_name , "-" , year ) ; (* Season-YYYY or Season--Y(YYY) pattern *)
+
+season_name            = "Spring" | "Summer" | "Autumn" | "Winter" ; (* Defines season names *)
+
+century_expr           = [ "~" ] , [ temporal_qualifier , "-" ] , century_number , "C" , { uncertainty } , (* Allows multiple uncertainty components *)
+                         [ style_note ] , [ calendar_system ] ;
+(* Century expression with optional approximation, dashed temporal qualifier, uncertainty, style, and calendar system *)
+
+century_number         = integer_number | temporal_integer_choice ; (* Century number can be a single integer or a choice/range *)
+
+decade_expr            = [ "~" ] , [ temporal_qualifier , "-" ] , decade_number , "s" , { uncertainty } , (* Allows multiple uncertainty components *)
+                         [ style_note ] , [ calendar_system ] ;
+(* New: Decade expression with optional approximation, dashed temporal qualifier, uncertainty, style, and calendar system *)
+
+decade_number          = digit , digit , digit ; (* Represents the first three digits of a decade, e.g., '197' for 1970s *)
+
+day_of_year_expr       = [ "~" ] , "D" , day_number_in_year , "-" , year , { uncertainty } , (* Allows multiple uncertainty components *)
+                         [ note_component ] , [ style_note ] , [ calendar_system ] ;
+(* New: Specific day number within a year, e.g., D123-2022 *)
+day_number_in_year     = digit , [ digit ] , [ digit ] ; (* Allows 1-3 digits. Semantic validation for max day number is external. *)
+
+week_expr              = [ "~" ] , [ temporal_qualifier , "-" ] , "W" , digit , digit , "-" , year , [ "-" , "D-" , day_of_week_number_periodic ] , { uncertainty } , (* Allows multiple uncertainty components *)
+                         [ note_component ] , [ style_note ] , [ calendar_system ] ;
+(* Week number expression, e.g., W12-2022, ~Early-W01-2023, W12-2022-D-1 *)
+
+quarter_expr           = [ "~" ] , [ temporal_qualifier , "-" ] , "Q" , ("1" | "2" | "3" | "4") , "-" , year , { uncertainty } , (* Allows multiple uncertainty components *)
+                         [ note_component ] , [ style_note ] , [ calendar_system ] ;
+(* Quarter number expression, e.g., Q2-2022, ~Late-Q4-2024 *)
+
+half_year_expr         = [ "~" ] , [ temporal_qualifier , "-" ] , "H" , ("1" | "2") , "-" , year , { uncertainty } , (* Allows multiple uncertainty components *)
+                         [ note_component ] , [ style_note ] , [ calendar_system ] ;
+(* Half-year expression, e.g., H1-2022, ~H2-2023 *)
+
+ordinal_day_expr       = [ "~" ] , ( ordinal_day_single | ordinal_day_range ) , { uncertainty } , (* Allows multiple uncertainty components *)
+                         [ note_component ] , [ style_note ] , [ calendar_system ] ;
+(* Ordinal day-of-week expression, e.g., 1º-Mon-2022, [1º..3º]-Mon-H2-2023 *)
+
+ordinal_day_single     = ordinal_number , "-" , day_of_week_short , "-" , ordinal_temporal_period_reference ;
+ordinal_day_range      = "[" , ordinal_number , ".." , ordinal_number , "]" , "-" , day_of_week_short , "-" , ordinal_temporal_period_reference ;
+
+ordinal_number         = digit , { digit } , "º" ; (* 1º, 2º, 3º, 11º, 21º *)
+day_of_week_short      = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun" ; (* Short 3-letter forms *)
+day_of_week_number_periodic = "1" | "2" | "3" | "4" | "5" | "6" | "7" ; (* Day number within a periodic structure, 1=Monday *)
+
+ordinal_temporal_period_reference = year
+                                  | date_prefix (* For specific date ranges within which ordinal day falls *)
+                                  | decade_expr
+                                  | century_expr
+                                  | week_expr
+                                  | quarter_expr
+                                  | half_year_expr ; (* Extended to include all periodic expressions *)
+
+numeric_timeline_point = [ "~" ] , number , { uncertainty } , [ note_component ] ; (* Allows multiple uncertainty components *)
+(* For cosmic or abstract time points *)
+
+time_only_expr         = "T" , time_component , [ timezone_component ] , [ geo_qualifier ] , [ note_component ] , [ style_note ] , [ calendar_system ] ; (* Time only with optional components *)
+
+geo_qualifier          = "@" , (location_name | geo_coordinates) ; (* Geo-temporal qualifier *)
+location_name          = { character_in_location_name } ;
+character_in_location_name = letter | digit | " " | "/" | "-" | "_" ;
+geo_coordinates        = "geo:" , number , "," , number ;
+
+weighted_date_part       = (year | month_number_literal | day_number_literal | century_number_literal | hour_literal | minute_literal | second_literal) , "*" , percentage ; (* Expanded: Allows various date/time literals with percentage weight *)
+weighted_date_part_choice = "[" , weighted_date_part , { "-" , weighted_date_part } , "]" ; (* Rule for weighted choices of date parts *)
+
+temporal_integer_choice = "[" , ( integer_range | integer_discrete ) , "]" ; (* New: General choice/range for integer temporal parts *)
+integer_range          = integer_number , ".." , integer_number ;
+integer_discrete       = integer_number , { "|" , integer_number } ;
+
+month_number_literal   = "0" , ("1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9") | "1" , ("0" | "1" | "2") ; (* Stricter: 01-12 *)
+month_component        = month_number_literal | "?" | weighted_date_part_choice | multi_date_choice | temporal_integer_choice ;
+
+day_number_literal     = "0" , ("1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9") | ("1" | "2") , digit | "3" , ("0" | "1") ; (* Stricter: 01-31 *)
+day_component          = day_number_literal | "?" | day_choice_component | weighted_date_part_choice | temporal_integer_choice ;
+
+time_component         = hour_component , ":" , minute_component , [ ":" , second_component , [ fractional_seconds ] ] ; (* Updated to use component rules *)
+
+hour_literal           = ("0" | "1") , digit | "2" , ("0" | "1" | "2" | "3") ; (* Stricter: 00-23 *)
+hour_component         = hour_literal | "?" | weighted_date_part_choice | temporal_integer_choice ;
+
+minute_literal         = ("0" | "1") , digit | "2" , ("3" | "4" | "5") , digit ; (* Stricter: 00-59 *)
+minute_component       = minute_literal | "?" | weighted_date_part_choice | temporal_integer_choice ;
+
+second_literal         = ("0" | "1") , digit | "2" , ("3" | "4" | "5") , digit ; (* Stricter: 00-59 *)
+second_component       = second_literal | "?" | weighted_date_part_choice | temporal_integer_choice ;
+
+fractional_seconds     = "." , digit , { digit } ;
+
+timezone_component     = ("Z" | ("+" | "-") , tz_hour , ":" , tz_minute | (letter , letter , letter)) (* Existing simple forms *)
+                       | "[" , (timezone_full_id | timezone_transition) , "]" ; (* Explicit timezone IDs and transitions *)
+
+timezone_full_id       = { character_in_timezone_id } ; (* e.g., America/New_York *)
+character_in_timezone_id = letter | digit | "_" | "/" | "+" | "-" ; (* Characters allowed in timezone ID, including for UTC offsets like UTC+2 *)
+
+timezone_transition    = (timezone_full_id) , "→" , (timezone_full_id) ; (* e.g., EST→EDT or UTC+2→UTC+3 *)
+
+note_component         = "#" , { character } ;
+
+style_note             = "(os)" | "(ns)" ; (* Simplified: Old Style (O.S., st. v.) / New Style (N.S., st. n.) dating note *)
+
+calendar_system        = "(" , calendar_id , ")" ; (* Explicit calendar system definition *)
+calendar_id            = { character_in_calendar_id } ; (* Now allows custom text for calendar IDs *)
+character_in_calendar_id = ? any printable character except ')' and newline ? ; (* Characters allowed within calendar ID *)
+
+multi_date_choice      = "[" , date_choice , { "|" , date_choice } , "]" ;
+
+date_choice            = date_pair
+                       | day_range ;
+
+date_pair              = month_number_literal , "-" , day_number_literal ;
+
+day_range              = day_number_literal , ".." , [ "~" ] , day_number_or_wildcard ;
+
+day_number_or_wildcard = day_number_literal | "?" ;
+
+year                   = integer_number | "?" | temporal_integer_choice ; (* Year can be an integer, wildcard, or a range/choice *)
+century_number_literal = digit , { digit } ; (* The literal form for century number *)
+
+integer_number         = [ "-" ] , digit , { digit } ; (* Rule for integer numbers, without fractional part or underscores *)
+
+percentage             = "100%" | digit , digit , "%" ; (* 100% and 00-99% *)
+
+number                 = [ "-" ] , digit , { digit_or_underscore } , [ "." , digit , { digit } ] ; (* Allows optional '-' *)
+
+digit_or_underscore    = digit | "_" ;
+
+digit                  = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+letter                 = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" ; (* Capital letters for ISO codes *)
+character              = ? any printable character except newline ? ;
+
+
+(* --- Examples --- *)
+
+(* === Standard Dates === *)
+
+1990                                  (* A specific year *)
+2023-05                               (* A specific year and month *)
+2023-05-15                            (* A specific year, month, and day *)
+-449                                  (* Year 449 BC *)
+
+(* === Partial Dates (Month/Day Only, with optional time) === *)
+
+?-05                                  (* May, unknown year *)
+?-?-13                                (* 13th day of unknown month and year *)
+?-05T10:00:00                         (* May, unknown year, at 10:00:00 *)
+?-?-13T?:30:00                        (* 13th day of unknown month and year, at 30 minutes past any hour *)
+
+(* === Time Only Expressions === *)
+
+T12:00:00                             (* Any day at noon *)
+T?:30:00                              (* Any hour, at 30 minutes, 00 seconds *)
+T?:?:?                                (* Any time, unknown date *)
+T18:00:00                             (* Any day at 6 PM (18:00) *)
+
+(* === Standard Dates with Time === *)
+
+1985-12-17T08:45:00                   (* Specific date and time (no offset) *)
+1985-12-17T08:45:00+02:00             (* Specific date and time with a +02:00 timezone offset *)
+2024-01-01T00:00:00Z                  (* January 1, 2024, at midnight UTC *)
+2023-10-27T15:30:00PST                (* October 27, 2023, 3:30 PM PST *)
+2023-11-20T23:59:59.123               (* Date and time with milliseconds *)
+2023-11-20T23:59:59.123456789         (* Date and time with nanoseconds *)
+2024-03-08T09:00:00IST                (* March 8, 2024, 9:00 AM Indian Standard Time *)
+2024-03-08T09:00:00JST                (* March 8, 2024, 9:00 AM Japan Standard Time *)
+
+(* === Seasons (Season-YYYY) === *)
+
+Autumn-2023                           (* A specific season and year *)
+Summer-2025                           (* Another example of season and year *)
+
+(* === Periodic Dates (Day of Year, Weeks, Quarters, Half-Years) === *)
+
+D12-2022                              (* The 12th day of year 2022 *)
+W12-2022                              (* Week 12 of year 2022 *)
+Q2-2023                               (* Quarter 2 of year 2023 *)
+H2-2023                               (* Half-year 2 of year 2023 *)
+
+(* === Centuries (C) === *)
+
+19C                                   (* Specific 19th Century *)
+-5C                                   (* 5th Century BC *)
+Early-21C                             (* Early part of the 21st Century *)
+
+(* === Decades (YYYYs) === *)
+
+1970s                                 (* The decade of the 1970s *)
+Early-1970s                           (* The early part of the 1970s decade *)
+~2020s                                (* Approximately the 2020s decade *)
+
+(* === Temporal Qualifiers (Early-, Mid-, Late-) === *)
+
+Early-2020                            (* Semantic qualifier: Early part of 2020 *)
+Mid-19C                               (* Semantic qualifier: Middle of the 19th Century *)
+~Late-Autumn-2021                     (* Approximately late Autumn 2021 *)
+
+(* === Wildcards (?) === *)
+
+2021-07-?                             (* Year 2021, July, any day *)
+?-?-?                                 (* Any date (unknown year, month, day) *)
+2023-05-?T?:?:?                       (* May 2023, any day, any time *)
+?-07-?                                (* Unknown year, July, any day *)
+2023-?-15                             (* 2023, unknown month, 15th day *)
+T?:?:?@geo:50.0,20.0                  (* Unknown time, at specific coordinates *)
+
+(* === Notes (#) === *)
+
+1985-12-17T08:45:00+02:00#birth of author (* Specific date and time with timezone and a descriptive note *)
+19C#Industrial Revolution                 (* 19th Century with a descriptive note *)
+~Late-2022#ProjectCompletion              (* Approximately late 2022, with a note "ProjectCompletion" *)
+
+(* === Geo-Temporal Qualifiers (@Location or @geo:lat,lon) === *)
+
+2023-06-15@Tokyo                            (* Date specific to Tokyo timezone (cultural context) *)
+1985-12-17T08:45:00@geo:50.061389,19.937222 (* Date and time at specific coordinates *)
+T12:00:00@geo:34.0522,-118.2437             (* Time at specific coordinates *)
+
+(* === Historical Style Notes (os/ns) & Calendar Systems === *)
+
+1700-03-20(os)                        (* March 20, 1700, Old Style (Julian calendar implied) *)
+1700-03-20(ns)                        (* March 20, 1700, New Style (Gregorian calendar implied) *)
+2023-01-01(iso8601)                   (* January 1, 2023, ISO 8601 calendar *)
+100(stardate)                         (* Year 100, specified with a Stardate calendar from sci-fi *)
+
+(* === Ranges (..) === *)
+
+2000..2010                            (* A year range from 2000 to 2010 *)
+~1944-06-04..~1944-06-06              (* A fuzzy date range, approximately June 4th to June 6th, 1944 *)
+19C..20C                              (* A range of centuries from 19th to 20th *)
+
+(* === Open-ended Ranges (.. at start or end) === *)
+
+2020-01-01..                          (* Open-ended range: From January 1, 2020 onwards *)
+..1990-12-31                          (* Open-ended range: Up to December 31, 1990 *)
+1999s..                               (* From the 1990s decade onwards *)
+
+(* === Uncertain Range Ends and Startings (.. ? or ? ..) === *)
+
+~1944-06-04..?                        (* Start known, end fuzzy *)
+?..1945-05-08                         (* End known, start uncertain *)
+?..                                   (* Both start and end uncertain *)
+
+(* === Multiple Choices (|) === *)
+
+1980-01-01..1981-12-31|1990-01..1992-06 (* Multiple date ranges: from Jan 1, 1980 to Dec 31, 1981 OR from Jan 1990 to June 1992 *)
+19C|20C                                 (* Either the 19th Century OR the 20th Century *)
+2020|2022                               (* Either year 2020 or year 2022 *)
+
+(* === Day & Month Choices/Ranges ([D..D] or [MM-DD|...]) === *)
+
+2012-12-[1..3]                        (* Year 2012, December, between day 1 and day 3 (inclusive) *)
+1948-[04-11|05-12|06-01]              (* Year 1948, on one of three specific dates: April 11th, May 12th, or June 1st *)
+2024-06-[5..7]                        (* June 2024, between the 5th and 7th *)
+
+(* === Approximate Dates (~) === *)
+
+~1990                                 (* Approximate year 1990 *)
+~Autumn-2023                          (* Approximate year 2023, Autumn season *)
+~1944-06-04                           (* Approximately June 4th, 1944 *)
+
+(* === Uncertainty ((±N) or (+N-M)) === *)
+
+2014(±2y)                             (* Year 2014, with a symmetric uncertainty of ±2 years *)
+~2014(+3y-1y)                         (* Approximately year 2014, with an asymmetric uncertainty of +3 years, -1 year *)
+19C(±1C)                              (* 19th Century, with an uncertainty of ±1 century *)
+2023-05-15T10:00:00(±0.5s)            (* May 15, 2023, at 10:00:00, with ±0.5 second uncertainty *)
+
+(* === Ordinal Day-of-Week Expressions (Nº-Day-Period) === *)
+
+1º-Mon-2022                           (* The first Monday of year 2022 *)
+4º-Fri-Autumn-2023                    (* The fourth Friday of Autumn 2023 *)
+[1º..3º]-Mon-H2-2023                  (* From 1st to 3rd Monday of Half-year 2, 2023 *)
+
+(* === Weighted Date Part Choices ([PART*N%-PART*M%]) === *)
+
+2020-[03*20%-04*80%]                  (* Year 2020, with a weighted probability: 20% in March, 80% in April *)
+2023-01-[15*60%-16*40%]               (* January 2023, with weighted probability: 60% on 15th, 40% on 16th *)
+[2023*70%-2024*30%]                   (* Weighted probability for years: 70% 2023, 30% 2024 *)
+T[10*30%-11*70%]                      (* Time: Weighted probability for 10 AM (30%) vs 11 AM (70%) *)
+
+(* === Temporal Integer Choices ([N..M] or [N|M]) === *)
+
+[2020..2025]                          (* A range of years from 2020 to 2025 *)
+2023-[03..05]                         (* Year 2023, months from March to May *)
+2023-01-[10|15|20]                    (* January 2023, on the 10th, 15th, or 20th *)
+T[09..11]:00:00                       (* Time: any hour between 09 and 11, at 00:00 *)
+T10:[30|35]:00                        (* 10 AM, either 30 or 35 minutes, 00 seconds *)
+[19C|20C]                             (* Either the 19th or 20th century (as a choice within a context) *)
+
+(* === Timezone Handling Extensions ([ID] or [Transition]) === *)
+
+2024-01-01T00:00:00[America/New_York] (* Explicit timezone ID *)
+2024-01-01T00:00:00[EST→EDT]          (* Timezone with daylight saving shift *)
+2024-01-01T00:00:00[UTC+2→UTC+3]      (* Timezone offset change *)
+
+(* === Probability Distributions (~distribution(params)) === *)
+
+2023~normal(μ=2023,σ=2)               (* Normally distributed around 2023 with σ=2 years *)
+~2024-06-15~uniform(start=2024-06-01,end=2024-06-30) (* Uniform distribution over June 2024 *)
+19C~triangular(early=1801,peak=1850,late=1900) (* Triangular distribution over 19th century *)
+
+(* === Nested Uncertainty ((Uncertainty1)(Uncertainty2)) === *)
+
+~2023(±1y)(±0.5Q)                     (* Nested uncertainty intervals: ±1 year and ±0.5 quarter *)
+~Early-2020s(±2y)(±1Q)                (* Uncertainty in both year and quarter *)
+1999-12-31(±1d)(±3h)                  (* Date with day and hour uncertainty *)
+
+(* === Number Separators (_) === *)
+
+1_000_000                              (* Year 1M *)
+-1_234_567_890                         (* Year -1234567890 *)
+~-13_787_000_000(±20_000_000)#Big Bang (* Approximate point on a numerical timeline using underscores for readability, with uncertainty *)
+~-4_500_000_000#EarthFormation         (* Earth's formation, demonstrating underscores for large numbers in a note *)
