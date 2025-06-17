@@ -18,10 +18,16 @@ EBNF (Extended Backus-Naur Form) is a notation for formally describing syntax. I
 
 ### How to Use
 
+Use the [grammar/fuzzy-date.ebnf](grammar/fuzzy-date.ebnf) file to implement a parser in your preferred programming language.
+
 1. **Parser Implementation**: Use the EBNF grammar to implement a parser in your preferred programming language
 2. **Database Storage**: Define database schemas that can store fuzzy date expressions
 3. **Testing**: Use the examples provided to test your implementation
 4. **Integration**: Integrate the parser into your application for handling fuzzy date inputs
+
+## EBNF file
+
+https://github.com/dariusz-wozniak/fuzzy-dates/blob/d97e14b5a2c2f3089973de9ae93de12ca43ffde8/grammar/fuzzy-date.ebnf#L1-L188
 
 ## Features Overview
 
@@ -529,5 +535,5 @@ As for the syntax, ideas for EBNF (not planned):
 * Contextual Modifiers, `BusinessDays(2023-12-20..2023-12-31)`, `Weekends(2023-05)`, `Holidays(US, 2023)`
 * Mathematical Operations on Dates, `Avg(2023-01-01, 2023-12-31)`, `2023-01-01 + (2023-12-31 - 2023-01-01)/2`
 * Linguistic Approximations, `~A few years ago`, `~Last century`
-* Versioning for Date Definitions, `2023-01-01{v1}`, `@MoonLanding{v2}`
+* Versioning for Date Definitions, `@MoonLanding{v2}`
 * Bidirectional Indefiniteness ("between-ish"), `2022~between~2025`
