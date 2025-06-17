@@ -29,7 +29,7 @@ Use the [grammar/fuzzy-date.ebnf](grammar/fuzzy-date.ebnf) file to implement a p
 
 ## 📚 EBNF file
 
-https://github.com/dariusz-wozniak/fuzzy-dates/blob/d97e14b5a2c2f3089973de9ae93de12ca43ffde8/grammar/fuzzy-date.ebnf#L1-L188
+https://raw.githubusercontent.com/dariusz-wozniak/fuzzy-dates/refs/heads/main/grammar/fuzzy-date.ebnf#L1-L188
 
 ## ✨ Features Overview
 
@@ -60,7 +60,6 @@ https://github.com/dariusz-wozniak/fuzzy-dates/blob/d97e14b5a2c2f3089973de9ae93d
 * Timezone Handling — e.g. `2024-01-01T00:00:00[America/New_York]`
 * Timezone Shifts — e.g. `2024-01-01T00:00:00[EST→EDT]`
 * Number Separators — e.g. `1_000_000`
-
 
 ## 🔄 SPARQL Integration
 
