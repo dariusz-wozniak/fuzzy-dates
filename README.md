@@ -173,6 +173,8 @@ As for the syntax, ideas for EBNF (not planned as for now though :):
 * Versioning for Date Definitions, `@MoonLanding{v2}`
 * Bidirectional Indefiniteness ("between-ish"), `2022~between~2025`, `2022*70%~2025`
 * Unspecified digit(s), `201X-05-XX`
+* Exponential year, `17E8`
+* Date Element Specifier, `M12`, `D31`, `Y2000`
 * Temporal categories:
     * Temporal Logic, `Before(date1, date2)`, `During(date, period)`
     * Temporal Aggregation, `GroupBy(dates, period)`, `Cluster(dates, maxGap)`
