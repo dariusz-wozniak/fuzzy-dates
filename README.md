@@ -178,3 +178,4 @@ As for the syntax, ideas for EBNF (not planned as for now though :):
     * Temporal Validation, `IsValid(date, constraints)`, `IsConsistent(dates)`
     * Temporal Transformation, `Convert(date, targetCalendar)`, `Normalize(date, format)`
 * Connect with External Data (e.g. Wikidata)
+* ISO 8061 full compatibility
