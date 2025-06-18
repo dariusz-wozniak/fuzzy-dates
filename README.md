@@ -172,6 +172,7 @@ As for the syntax, ideas for EBNF (not planned as for now though :):
 * Date Element Comments and Citations, `1237-03-[19|20|21|22|23#('Most 13th-century sources suggest that John died between 19 and 23 March 1237')]`, `~1170#('uncertain birth year')`
 * Versioning for Date Definitions, `@MoonLanding{v2}`
 * Bidirectional Indefiniteness ("between-ish"), `2022~between~2025`, `2022*70%~2025`
+* Unspecified digit(s), `201X-05-XX`
 * Temporal categories:
     * Temporal Logic, `Before(date1, date2)`, `During(date, period)`
     * Temporal Aggregation, `GroupBy(dates, period)`, `Cluster(dates, maxGap)`
