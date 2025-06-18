@@ -1,4 +1,4 @@
-[Version: 2025-06-17_1](syntax/docs/versions.md)
+[Version: 2025-06-17_1](versions.md)
 
 **fuzzy_date_expression:**
 
